@@ -1,14 +1,17 @@
-import jwt from "jsonwebtoken"
-import { env } from "../config/env.js"
+const { sendError } = require('../utils/response');
 
-export const protect = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1]
-  if (!token) return res.status(401).json({ message: "Unauthorized" })
+const checkRole = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return sendError(res, 401, 'Not authorized');
+    }
+    
+    if (!roles.includes(req.user.role)) {
+      return sendError(res, 403, 'Access denied. Insufficient permissions');
+    }
+    
+    next();
+  };
+};
 
-  try {
-    req.user = jwt.verify(token, env.JWT_SECRET)
-    next()
-  } catch {
-    res.status(401).json({ message: "Invalid token" })
-  }
-}
+module.exports = { checkRole };

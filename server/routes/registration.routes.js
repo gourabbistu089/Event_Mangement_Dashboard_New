@@ -1,7 +1,16 @@
-import express from "express"
-import { registerEvent } from "../controllers/registration.controller.js"
-import { protect } from "../middlewares/auth.middleware.js"
+const express = require('express');
+const router = express.Router();
+const {
+  registerForEvent,
+  cancelRegistration,
+  getMyRegistrations,
+  getEventRegistrations
+} = require('../controllers/registration.controller');
+const { protect, organizer } = require('../middlewares/auth.middleware');
 
-const router = express.Router()
-router.post("/:eventId", protect, registerEvent)
-export default router
+router.post('/', protect, registerForEvent);
+router.get('/my-registrations', protect, getMyRegistrations);
+router.put('/:id/cancel', protect, cancelRegistration);
+router.get('/event/:eventId', protect, organizer, getEventRegistrations);
+
+module.exports = router;
