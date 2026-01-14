@@ -13,7 +13,12 @@ try {
 
 // Login
 export const loginUser = (data) => {
-  return api.post("/auth/login", data)
+  try {
+    const res = api.post("/auth/login", data)
+    return res
+  } catch (error) {
+    console.log("Error in login : ",error)
+  }
 }
 
 // Get logged-in user

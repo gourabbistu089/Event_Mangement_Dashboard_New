@@ -1,14 +1,27 @@
+const { uploadOnCloudinary } = require('../config/cloudinary');
 const Event = require('../models/Event.model');
 
 // Create event
 exports.createEvent = async (req, res) => {
   try {
+    let eventImage = null;
+
+    // ✅ check if file exists
+    console.log("REq body ",req.body)
+    console.log("Req file ",req.file)
+    if (req.file) {
+      const imgUrl = await uploadOnCloudinary(req.file.buffer);
+      eventImage = imgUrl.secure_url;
+    }
+
     const event = await Event.create({
       ...req.body,
+      eventImage,
       organizer: req.user.id
     });
     res.status(201).json({ success: true, event });
   } catch (error) {
+    console.log("Error in create event : ", error)
     res.status(500).json({ message: error.message });
   }
 };
@@ -47,7 +60,9 @@ exports.updateEvent = async (req, res) => {
     if (event.organizer.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
-
+      const imgUrl = await uploadOnCloudinary(req.file.buffer);
+      const eventImage = imgUrl.secure_url;
+      req.body.eventImage = eventImage;
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json({ success: true, event: updatedEvent });
   } catch (error) {

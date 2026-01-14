@@ -6,7 +6,7 @@ import { registerUser } from '../../api/auth.api';
 
 export const Register = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user, setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -60,9 +60,10 @@ export const Register = () => {
       console.log(formData)
      const res = await registerUser(formData)
      console.log("Response in registration : ",res)
-      return;
-      // Redirect based on role
-      if (userData.role === 'organizer') {
+      setUser(res.data.user);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      localStorage.setItem('token', res.data.token);
+      if (res.data.user.role === 'organizer') {
         navigate('/organizer-dashboard');
       } else {
         navigate('/user-dashboard');

@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Clock, MapPin, Users, CheckCircle, TrendingUp } from 'lucide-react';
 
 export const EventCard = ({ event, onRegister, isRegistered, showStats }) => {
-  const registrationPercentage = (event.registered / event.capacity) * 100;
+  const registrationPercentage = (event.registerSeats / event.capacity) * 100;
   const isAlmostFull = registrationPercentage >= 90;
 
   const formatDate = (dateString) => {
@@ -19,7 +19,7 @@ export const EventCard = ({ event, onRegister, isRegistered, showStats }) => {
       {/* Event Image */}
       <div className="h-48 bg-gray-200 overflow-hidden">
         <img
-          src={event.image}
+          src={event.eventImage}
           alt={event.title}
           className="w-full h-full object-cover"
           onError={(e) => {
@@ -65,7 +65,7 @@ export const EventCard = ({ event, onRegister, isRegistered, showStats }) => {
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-gray-600 flex items-center gap-1">
               <Users className="w-4 h-4" />
-              {event.registered} / {event.capacity} registered
+              {event.registerSeats} / {event.capacity} registered
             </span>
             <span className={`font-medium ${isAlmostFull ? 'text-orange-600' : 'text-gray-700'}`}>
               {registrationPercentage.toFixed(0)}%
@@ -94,19 +94,19 @@ export const EventCard = ({ event, onRegister, isRegistered, showStats }) => {
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
                 <Users className="w-4 h-4" />
-                <span className="text-lg font-semibold">{event.capacity - event.registered}</span>
+                <span className="text-lg font-semibold">{event.capacity - event.registerSeats}</span>
               </div>
               <span className="text-xs text-gray-500">Spots Left</span>
             </div>
           </div>
         ) : (
           <button
-            onClick={() => onRegister(event.id)}
-            disabled={isRegistered || event.registered >= event.capacity}
+            onClick={() => onRegister(event._id)}
+            disabled={isRegistered || event.registerSeats >= event.capacity}
             className={`w-full py-2.5 rounded-lg font-medium transition-colors ${
               isRegistered
                 ? 'bg-green-50 text-green-700 cursor-default'
-                : event.registered >= event.capacity
+                : event.registerSeats >= event.capacity
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
@@ -116,7 +116,7 @@ export const EventCard = ({ event, onRegister, isRegistered, showStats }) => {
                 <CheckCircle className="w-4 h-4" />
                 Registered
               </span>
-            ) : event.registered >= event.capacity ? (
+            ) : event.registerSeats >= event.capacity ? (
               'Event Full'
             ) : (
               'Register Now'

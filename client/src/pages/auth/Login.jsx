@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { loginUser } from '../../api/auth.api';
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { user, setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -40,24 +41,20 @@ export const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validate()) {
       // Simulate login - in real app, this would call an API
-      const userData = {
-        id: 1,
-        name: 'Sarah Johnson',
-        email: formData.email,
-        role: 'organizer' // Change to 'user' to test user flow
-      };
-      login(userData);
-      
-      // Redirect based on role
-      if (userData.role === 'organizer') {
-        navigate('/organizer-dashboard');
-      } else {
-        navigate('/user-dashboard');
-      }
+      const res = await loginUser(formData)
+          console.log("Response in Login : ",res)
+           setUser(res.data.user);
+           localStorage.setItem('user', JSON.stringify(res.data.user));
+           localStorage.setItem('token', res.data.token);
+           if (res.data.user.role === 'organizer') {
+             navigate('/organizer-dashboard');
+           } else {
+             navigate('/user-dashboard');
+           }
     }
   };
 
@@ -148,16 +145,7 @@ export const Login = () => {
               Sign In
             </button>
           </form>
-
-          {/* Demo Accounts */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-xs font-medium text-gray-700 mb-2">Demo Accounts:</p>
-            <div className="text-xs text-gray-600 space-y-1">
-              <p>Organizer: organizer@demo.com / password123</p>
-              <p>User: user@demo.com / password123</p>
-            </div>
-          </div>
-
+          
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../../components/common/Navbar';
 import { Calendar, Clock, MapPin, Users, Type, AlignLeft, Upload, X, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { createEvent } from '../../api/event.api';
 
 export const CreateEvent = () => {
   const navigate = useNavigate();
@@ -81,25 +82,46 @@ export const CreateEvent = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      // In a real app, you would upload the image to a server and get a URL
-      // For now, we'll use the preview as the image
-      const eventData = {
-        ...formData,
-        id: Date.now(),
-        organizerId: user.id,
-        registered: 0,
-        status: 'active',
-        image: imagePreview || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800'
-      };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-      console.log('Event created:', eventData);
-      alert('Event created successfully!');
-      navigate('/');
+  if (!validate()) return;
+
+  try {
+    const fd = new FormData();
+
+    // text fields
+    fd.append("title", formData.title);
+    fd.append("description", formData.description);
+    fd.append("location", formData.location);
+    fd.append("capacity", formData.capacity);
+
+    // combine date + time → ISO (backend expects Date)
+    const eventDateTime = new Date(`${formData.date}T${formData.time}`);
+    fd.append("date", eventDateTime.toISOString());
+
+    // optional: registration deadline (1 day before event)
+    const deadline = new Date(eventDateTime);
+    deadline.setDate(deadline.getDate() - 1);
+    fd.append("registrationDeadline", deadline.toISOString());
+
+    fd.append("category", formData.category);
+
+    // image (VERY IMPORTANT: key name must match multer)
+    if (imageFile) {
+      fd.append("eventImage", imageFile);
     }
-  };
+
+    // API call
+    await createEvent(fd);
+    alert("Event created successfully!");
+    navigate("/organizer-dashboard");
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || "Failed to create event");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50">

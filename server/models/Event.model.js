@@ -21,8 +21,9 @@ const eventSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  availableSeats: {
-    type: Number
+  registerSeats: {
+    type: Number,
+    default:0,
   },
   organizer: {
     type: mongoose.Schema.Types.ObjectId,
@@ -37,14 +38,21 @@ const eventSchema = new mongoose.Schema({
     type: String,
     enum: ['upcoming', 'ongoing', 'completed', 'cancelled'],
     default: 'upcoming'
-  }
+  },
+  eventImage:{
+    type: String,
+    required: false
+  },
+  category: {
+    type: String,
+    // required: true
+  },
+  registerUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }]
 }, { timestamps: true });
 
-eventSchema.pre('save', function(next) {
-  if (this.isNew) {
-    this.availableSeats = this.capacity;
-  }
-  next();
-});
+
 
 module.exports = mongoose.model('Event', eventSchema);

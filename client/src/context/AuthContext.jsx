@@ -3,19 +3,15 @@ import React, { createContext, useState } from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState({
-    id: 1,
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com',
-    role: 'organizer' // 'organizer' or 'user'
-  });
+  const [user, setUser] = useState(
+    JSON.parse(localStorage.getItem('user')) || null
+  );
 
-  const login = (userData) => {
-    setUser(userData);
-  };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     window.location.href = '/';
   };
 
@@ -33,10 +29,8 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{ 
       user, 
-      login, 
-      logout, 
-      switchRole,
-      updateUser,
+      setUser,
+      logout,
       isAuthenticated: !!user 
     }}>
       {children}

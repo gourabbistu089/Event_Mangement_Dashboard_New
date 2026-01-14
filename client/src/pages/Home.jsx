@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Calendar, Users, TrendingUp, CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
+import { Navbar } from '../components/common/Navbar';
 
 export const Home = () => {
   const navigate = useNavigate();
@@ -37,36 +38,7 @@ export const Home = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
-      <nav className="border-b border-gray-200 sticky top-0 bg-white z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-semibold text-gray-900">EventHub</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link
-                to="/events"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Browse Events
-              </Link>
-              <Link
-                to="/login"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar/>
 
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
@@ -147,24 +119,7 @@ export const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to get started?
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join thousands of organizers already using EventHub
-          </p>
-          <button
-            onClick={() => navigate('/register')}
-            className="bg-white text-blue-600 px-8 py-3.5 rounded-lg text-base font-medium hover:bg-gray-50 transition-colors inline-flex items-center gap-2"
-          >
-            Create Your Free Account
-            <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
-      </section>
-
+    
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-gray-200 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

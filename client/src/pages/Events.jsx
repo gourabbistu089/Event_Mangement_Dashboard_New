@@ -4,13 +4,24 @@ import { Calendar, Search } from 'lucide-react';
 import { EventCard } from '../components/events/EventCard';
 import { DUMMY_EVENTS } from '../utils/dummyData';
 import { useAuth } from '../hooks/useAuth';
+import { useEffect } from 'react';
+import { getAllEvents, registerForEvent } from '../api/event.api';
+import { Navbar } from '../components/common/Navbar';
 
 export const Events = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [events] = useState(DUMMY_EVENTS);
+  const [events,setEvents] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  useEffect(() => {
+    // fetch events from server
+    const fetchEvents = async () => {
+      const res = await getAllEvents();
+      setEvents(res.data.events);
+    }
+    fetchEvents();
+  },[]);
 
   // Get unique categories
   const categories = ['all', ...new Set(events.map(e => e.category))];
@@ -23,55 +34,21 @@ export const Events = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleRegister = (eventId) => {
+  const handleRegister = async (eventId) => {
     if (!user) {
       // Redirect to login if not authenticated
       navigate('/login');
     } else {
+      await registerForEvent(eventId);
       alert('Registration successful!');
+      window.location.reload();
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-semibold text-gray-900">EventHub</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              {user ? (
-                <>
-                  <Link
-                    to={user.role === 'organizer' ? '/organizer-dashboard' : '/user-dashboard'}
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-                  >
-                    Dashboard
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    Get Started
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar/>
+   
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
@@ -125,7 +102,7 @@ export const Events = () => {
                 key={event.id}
                 event={event}
                 onRegister={handleRegister}
-                isRegistered={false}
+                isRegistered={event.registerUsers.includes(user?.id)}
               />
             ))}
           </div>

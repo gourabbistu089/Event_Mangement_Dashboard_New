@@ -12,12 +12,14 @@ import { UserDashboard } from './pages/user/UserDashboard';
 import { OrganizerDashboard } from './pages/organizer/OrganizerDashboard';
 import { CreateEvent } from './pages/organizer/CreateEvent';
 import { MyRegistrations } from './pages/user/MyRegistrations';
+import { Navbar } from './components/common/Navbar';
 
 function App() {
   return (
       <Router>
         <Routes>
           {/* Public Routes */}
+          
           <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/login" element={<Login />} />
